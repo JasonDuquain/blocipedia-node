@@ -8,6 +8,7 @@ module.exports = {
   signup(req, res, next) {
     res.render("users/signup");
   },
+    
   create(req, res, next) {
     let newUser = {
       name: req.body.name,
@@ -32,7 +33,8 @@ module.exports = {
           subject: "Thank you for joining Blocipedia!",
           text: 'Login and start collaborating on wikis!'
         };
-        sgMail.send(msg)
+        sgMail.send(msg);
+          
         passport.authenticate("local")(req, res, () => {
           req.flash("notice", "You've successfully signed up!");
           res.redirect("/");
@@ -40,5 +42,31 @@ module.exports = {
       }
     });
   },
+    
+   signInForm(req, res, next) {
+    res.render('users/sign_in');
+  },
+    
+   signIn(req, res, next){
+       
+    passport.authenticate("local")(req, res, function () {
+        
+      if(!req.user){
+          
+        req.flash("notice", "Login failed. Please try again.")
+        res.redirect("/users/sign_in");
+      } else {         
+          
+        req.flash("notice", "You are successfully signed in!");
+        res.redirect("/");
+      }
+    })
+  },
+    
+   signOut(req, res, next) {
+    req.logout();
+    req.flash('notice', "You have successfully signed out!");
+    res.redirect('/');
+  } 
 
 }

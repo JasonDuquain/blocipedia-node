@@ -17,8 +17,8 @@ module.exports = {
         })
         .then((user) => {
 
-        if (!user || !authHelper.comparePass(password, user.password)) {
-            return done(null, false, { message: "Invalid email or password" });
+        if (!user || !authHelper.comparePassword(password, user.password)) {
+            return done(null, false, { message: "login failed" });
         }
 
         return done(null, user);
@@ -42,3 +42,4 @@ module.exports = {
     });
     }
 }
+

@@ -11,12 +11,21 @@
 
       <!-- Page Content -->
       <main class="container">
-
+         <% include ./partials/messages.ejs %>
         <!-- Jumbotron Header -->
         <header class="jumbotron my-4">
           <h1 class="display-3">Welcome to Blocipedia</h1>
           <p class="lead">An application for users to collaboratively modify content and structure.</p>
-          <a href="/users/signup" class="btn btn-primary btn-lg">Sign up</a>
+          
+          
+          <% if(!currentUser) { %>
+            <a href="/users/signup" class="btn btn-primary btn-lg">Sign Up</a>
+            <a href="/users/sign_in" class="btn btn-primary btn-lg">Sign In</a>
+          <% } else { %>
+            <br>
+            <a href='#' class="btn btn-success btn-lg btn-block">Wikis</a>
+          <% } %>
+
         </header>
 
         <!-- Page Features -->

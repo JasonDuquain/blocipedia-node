@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 module.exports = {
 
-    createUser(newUser, callback){
+    createUser(newUser, cb){
         const salt = bcrypt.genSaltSync();
         const hashedPassword = bcrypt.hashSync(newUser.password, salt);
 
@@ -13,12 +13,23 @@ module.exports = {
             password: hashedPassword
         })
         .then((user) => {
-            callback(null, user);
+            cb(null, user);
         })
         .catch((err) => {
-            callback(err);
+            cb(err);
         });
-    }
-
+    },
+    
+    getUser(id, cb){
+        let result = {};
+        User.findById(id)
+        .then((user) => {
+            if(!user) {
+                cb(404);
+            } else {
+                result["user"] = user;
+            }
+         });
+     }
     
 }
