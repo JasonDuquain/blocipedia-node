@@ -3,3 +3,14 @@ body {
     padding-top: 54px;
 }
 
+.main-wiki-heading {
+    margin: 1em 0;
+}
+
+.wiki-list-group {
+    margin-top: 100px;
+}
+
+.all-wikis {
+    margin-top: 50px;
+}
