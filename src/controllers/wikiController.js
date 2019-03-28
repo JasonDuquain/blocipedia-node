@@ -29,7 +29,7 @@ module.exports = {
             if(err){
                 res.redirect(500, "/wikis/new");
             } else {
-                res.redirect(303, "/wikis/${wiki.id}")
+                res.redirect(303, `/wikis/${wiki.id}`)
             }
         });
     }, 
@@ -50,7 +50,7 @@ module.exports = {
 
         wikiQueries.deleteWiki(req.params.id, (err, deletedRecordsCount) => {
             if(err) {
-                res.redirect(500, "/wikis/${req.params.id}")
+                res.redirect(500, `/wikis/${req.params.id}`)
             } else {
                 res.redirect(303, "/wikis")
             }
@@ -73,7 +73,7 @@ module.exports = {
             if(err || wiki == null) {
                 res.redirect(404, `/wikis/${req.params.id}/edit`)
             } else {
-                res.redirect("/wikis/${req.params.id}")
+                res.redirect(`/wikis/${req.params.id}`)
             }
         });
     }
