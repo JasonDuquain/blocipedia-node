@@ -1,10 +1,10 @@
 const Wiki = require("./models").Wiki;
+const Authorizer = require("../policies/application");
 
 module.exports = {
 
     getAllWikis(callback) {
         return Wiki.all()
-
         .then((wikis) => {
             callback(null, wikis);
         })
@@ -12,7 +12,6 @@ module.exports = {
             callback(err);
         })
     }, 
-
     addWiki(newWiki, callback) {
         return Wiki.create(newWiki)
         .then((wiki) => {
@@ -22,46 +21,50 @@ module.exports = {
             callback(err);
         })
     }, 
-
     getWiki(id, callback){
         return Wiki.findById(id)
         .then((wiki) => {
-            console.log(wiki) // it is here why is it not passing to the controller??
             callback(null, wiki)
         })
         .catch((err) => {
             callback(err);
         })
     },
-
     deleteWiki(id, callback) {
-        return Wiki.destroy({
-            where: {id}
-        })
-        .then((deletedRecordsCount) => {
-            callback(null, deletedRecordsCount)
-        })
-        .catch((err) => {
-            callback(err);
-        })
+        return Wiki.findById(req.params.id)
+      .then((wiki) => {
+        const authorized = new Authorizer(req.user, wiki).destroy();
+
+        if (authorized) {
+          wiki.destroy()
+          .then((deletedRecordsCount) => {
+            callback(null, deletedRecordsCount);
+          });
+        } else {
+          req.flash("notice", "You are not authorized to delete this wiki");
+          callback(401);
+        }
+      })
+      .catch(err => {
+        callback(err);
+      });
     }, 
-
-    updateWiki(id, updatedWiki, callback) {
-        return Wiki.findById(id)
-        .then((wiki)=> {
-            if(!wiki){
-                return callback("Wiki not found");
-            }
-
+    updateWiki(req, updatedWiki, callback) {
+        return Wiki.findById(req.params.id)
+        .then((wiki) => {
+          if (!wiki) {
+            return callback(404);
+          } else {
             wiki.update(updatedWiki, {
                 fields: Object.keys(updatedWiki)
-            })
-            .then(() => {
+                })
+                .then(() => {
                 callback(null, wiki);
-            })
-            .catch((err) => {
-                callback(err);
-            });
+                })
+            }
+        })
+        .catch(err => {
+            callback(err);
         });
-    }
+    }  
 }
