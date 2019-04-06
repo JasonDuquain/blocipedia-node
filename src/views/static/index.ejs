@@ -23,7 +23,13 @@
             <a href="/users/sign_in" class="btn btn-primary btn-lg">Sign In</a>
           <% } else { %>
             <br>
-            <a href='/wikis' class="btn btn-success btn-lg btn-block">Wikis</a>
+            <a href='/wikis' class="btn btn-success btn-sm">Wikis</a>
+            <a href='/users/account' class="btn btn-info btn-sm">My Profile</a>
+            
+            <% if (currentUser.role != "premium") { %>  
+                <a href='/users/upgrade' class="btn btn-primary btn-sm">Upgrade to Premium</a>
+            <% } %>
+            
           <% } %>
 
         </header>

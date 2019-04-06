@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 module.exports = {
 
-    createUser(newUser, cb){
+    createUser(newUser, cb) {
         const salt = bcrypt.genSaltSync();
         const hashedPassword = bcrypt.hashSync(newUser.password, salt);
 
@@ -20,7 +20,7 @@ module.exports = {
         });
     },
     
-    getUser(id, cb){
+    getUser(id, cb) {
         let result = {};
         User.findById(id)
         .then((user) => {
@@ -30,6 +30,35 @@ module.exports = {
                 result["user"] = user;
             }
          });
-     }
+     },
+    
+      upgradeUser(id, callback){
+            return User.findById(id)
+            .then((user) => {
+                if(!user) {
+                    return callback(404);
+                } else {
+                    return user.updateAttributes({ role: 'premium' });
+                }
+            })
+            .catch((err) => {
+                callback(err);
+            })
+        },
+
+        downgradeUser(id, callback){
+            return User.findById(id)
+            .then((user) => {
+                if(!user){
+                    return callback(404);
+                } else {
+                    return user.updateAttributes({ role: 'standard' });
+                }
+            })
+            .catch((err) => {
+                callback(err);
+            })
+        }
+    
     
 }

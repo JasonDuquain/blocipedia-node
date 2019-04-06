@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include ../static/partials/head.ejs %>
+</head>
+
+<body>
+
+    <% include ../static/partials/navbar.ejs %>
+
+    <main class="container">
+
+        <% include ../static/partials/messages.ejs %>
+
+        <h1 class="upgrade__heading">Upgrade your account</h1>
+
+        <p>For $15 a month you can create private wikis</p>
+
+        <div class="upgrade__pay">
+            <small>Pay with card number 4242 4242 4242 4242,
+            Expiration date 01/29 and CVC number 123</small>
+        </div>
+
+        <form action="/users/<%= currentUser.id %>/upgrade" method="POST">
+        <script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-key="pk_test_MKv7eR41lNNkK2Zo7LdH4Tqp00nLE4dDhJ"
+                data-amount="1500" data-name="Demo Site" data-description="Example charge" data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                data-locale="auto">
+            </script>
+        </form>
+
+    </main>
+
+    <% include ../static/partials/baseScripts.ejs %>
+
+</body>
+
+</html>

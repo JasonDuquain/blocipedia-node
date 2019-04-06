@@ -1,7 +1,9 @@
 
 const userQueries = require("../db/queries.users.js");
 const passport = require("passport");
-
+const secretKey = process.env.STRIPE_SECRET_KEY;
+const publicKey = process.env.STRIPE_PUBLIC_KEY;
+const stripe = require('stripe')(secretKey);
 
 module.exports = {
     
@@ -48,7 +50,8 @@ module.exports = {
   },
     
    signIn(req, res, next){
-       
+    
+       //CHECK SYNTAX BELOW - it is working but a comma might be needed after ('local)
     passport.authenticate("local")(req, res, function () {
         
       if(!req.user){
@@ -67,6 +70,44 @@ module.exports = {
     req.logout();
     req.flash('notice', "You have successfully signed out!");
     res.redirect('/');
-  } 
+  },
+   
+    show(req, res, next) {
+        res.render("users/show");
+    },
+    
+    upgradeForm(req, res, next){
+    res.render('users/upgrade');
+  },
+
+  upgrade(req, res, next){
+      stripe.customers.create({
+        email: req.body.stripeEmail,
+        source: req.body.stripeToken
+      })
+        .then((customer) => {
+          stripe.charges.create({
+            amount: 1500,
+            currency: "usd",
+            customer: customer.id,
+            description: "Premium membership"
+          })
+        })
+        .then((charge) => {
+          userQueries.upgradeUser(req.user.dataValues.id);
+          res.render("users/upgrade_success");
+        })
+  },
+
+  upgraded(req, res, next){
+    res.render('users/upgrade_success');
+  },
+
+  downgrade(req, res, next) {
+    userQueries.downgradeUser(req.user.dataValues.id);
+    req.flash("notice", "You have successfully downgraded your account!");
+    res.redirect("/");
+  }
+    
 
 }

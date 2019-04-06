@@ -14,3 +14,15 @@ body {
 .all-wikis {
     margin-top: 50px;
 }
+
+
+
+.upgrade__heading {
+    margin: .8em 0;
+}
+
+.upgrade__pay {
+    font-style: italic;
+    color: red;
+    margin-bottom: 1em;
+}
