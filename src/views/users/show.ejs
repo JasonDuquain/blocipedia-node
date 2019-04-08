@@ -14,8 +14,11 @@
 
     <% include ../static/partials/messages.ejs %>
 
+   
     <h1>Account Settings</h1>
-
+    
+    <p><%= currentUser.name %></p>
+    
     <% if (currentUser && currentUser.role === "standard") { %>
      <p>Your current role is a standard user. In order to create private wikis please upgrade your account</p>
      <a href="/users/upgrade" class="btn btn-success">Upgrade</a>

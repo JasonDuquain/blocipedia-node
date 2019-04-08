@@ -6,25 +6,45 @@
     <body>
         <% include ../static/partials/navbar.ejs %>
 
+       
         <main class="container">
 
-        <h1 class="main-wiki-heading">Wikis</h1>
-
-        <p>Want to contribute something new? <a href="/wikis/new" class="btn btn-success">New Wiki</a></p>
-
-        <ul class="list-group wiki-list-group">
-
-            <% wikis.forEach((wiki) => { %>
+            <h1 class="main-wiki-heading">Wikis</h1>
             
-            <li class="list-group-item">
-                <a href="/wikis/<%= wiki.id %>"><%= wiki.title %></a>
-            </li>
+            <a href='/' class="btn btn-outline-info">
+                <i class='fas fa-arrow-left'></i>
+                Home
+            </a>
             
-            <% }) %>
+            <% if (!currentUser) { %>
+            <small>Please sign up or sign in to create your own wiki topic </small>
+            <% } %>
+            <% if (currentUser) { %>
+            <p>Want to contribute something new? <a href="/wikis/new" class="btn btn-success">New Wiki</a></p>
+            <% } %>
+
+            <ul class="list-group">
+            <% if (currentUser.role == 'admin') { wikis.forEach((wiki)=> { %>
+                <li class="list-group-item">
+                    <a href="/wikis/<%= wiki.id %>">
+                        <%= wiki.title %></a>
+                    <small> by: <%= currentUser.name %> @ <%= wiki.createdAt %> (Private: <%= (wiki.private).toString().toUpperCase(); %>) </small>
+                </li>
+                <% })} else { %>
+                    <% const newWikis = wikis.filter( wiki => wiki.userId === currentUser.id || wiki.private == false) %>
+                    <% newWikis.forEach((wiki) => { %>
+                    <li class="list-group-item">
+                        <a href="/wikis/<%= wiki.id %>"><%= wiki.title %></a>
+                    <small> by:
+                        <%= currentUser.name %> @ <%= wiki.createdAt %> </small>
+                    </li>
+            
+            <% }) }%>
         </ul>
 
         </main>
 
+       
         <% include ../static/partials/baseScripts.ejs %>
 
     </body>
