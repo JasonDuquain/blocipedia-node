@@ -1,12 +1,13 @@
 const wikiQueries = require("../db/queries.wikis.js");
 const Authorizer = require("../policies/application");
+const markdown = require( "markdown" ).markdown;
 
 
 module.exports = {
 
     index(req,res,next){
         wikiQueries.getAllWikis((err, wikis) => {
-          if(err){
+          if (err){
               console.log(err);
             res.redirect(500, "static/index");
           } else {
@@ -14,6 +15,7 @@ module.exports = {
           }
         })
       },
+
 
     new(req, res, next) {
         res.render("wikis/new");
@@ -46,10 +48,11 @@ module.exports = {
     show(req, res, next) {
 
         wikiQueries.getWiki(req.params.id, (err, wiki) => {
-            
-            if(err || wiki == null) {
+            if (err || wiki == null) {
                 res.redirect(404, "/")
             } else {
+                console.log( markdown.toHTML( "Hello *World*!" ) );
+                wiki.body = markdown.toHTML(wiki.body)
                 res.render("wikis/show", {wiki});
             }
         });
@@ -58,7 +61,7 @@ module.exports = {
     destroy(req, res, next) {
 
         wikiQueries.deleteWiki(req.params.id, (err, wiki) => {
-            if(err) {
+            if (err) {
                 res.redirect(500, `/wikis/${req.params.id}`)
             } else {
                 req.flash("notice", "Wiki deleted.");
@@ -66,11 +69,11 @@ module.exports = {
             }
         })
     },
-
+    
     edit(req, res, next){
         wikiQueries.getWiki(req.params.id, (err, wiki) =>{
 
-            if(err || wiki == null) {
+            if (err || wiki == null) {
                 res.redirect(404, "/")
             } else {
                 let authorized = new Authorizer(req.user).edit();
@@ -97,7 +100,7 @@ module.exports = {
     
     private(req, res, next) {
         wikiQueries.getAllWikis((err, wikis) => {
-          if(err){
+          if (err){
             res.redirect(500, 'static/index');
           } else {
             res.render('wikis/private', {wikis});
