@@ -15,15 +15,14 @@ module.exports = {
   create(req, res, next) {
     let newUser = {
       name: req.body.name,
-      email: req.body.email,
+      username: (req.body.username).toLowerCase(),
+      email: (req.body.email).toLowerCase(),
       password: req.body.password,
       passwordConfirmation: req.body.passwordconf
     };
 
     userQueries.createUser(newUser, (err, user) => {
       if(err) {
-        console.log('error in userController')
-        console.log(err)
         req.flash("error", err);
         res.redirect("/users/signup");
 

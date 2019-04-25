@@ -4,31 +4,32 @@ const Collaborator = require("./models").Collaborator;
 
 module.exports = {
 
-    createUser(newUser, cb) {
+    createUser(newUser, callback) {
         const salt = bcrypt.genSaltSync();
         const hashedPassword = bcrypt.hashSync(newUser.password, salt);
 
         return User.create({
             name: newUser.name,
+            username: newUser.username,
             email: newUser.email,
             password: hashedPassword
         })
         .then((user) => {
-            cb(null, user);
+            callback(null, user);
         })
         .catch((err) => {
-            cb(err);
+            callback(err);
         });
     },
     
-    getUser(id, cb) {
+    getUser(id, callback) {
         let result = {};
         
         User.findById(id)
         .then((user) => {
             if(!user) {
                 
-                cb(404);
+                callback(404);
                 
             } else {
                 

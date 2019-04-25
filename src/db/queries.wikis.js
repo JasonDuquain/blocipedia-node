@@ -1,7 +1,6 @@
 const Wiki = require("./models").Wiki;
-const Authorizer = require("../policies/application");
 const User = require("./models").User;
-const Collaborator = require("./models").Collaborators;
+const Collaborator = require("./models").Collaborator;
 
 
 module.exports = {
@@ -16,7 +15,12 @@ module.exports = {
         })
     }, 
     addWiki(newWiki, callback) {
-        return Wiki.create(newWiki)
+        return Wiki.create({
+          title: newWiki.title,
+          body: newWiki.body,
+          private: newWiki.private,
+          userId: newWiki.userId
+        })
         .then((wiki) => {
             callback(null, wiki)
         })
@@ -24,10 +28,24 @@ module.exports = {
             callback(err);
         })
     }, 
-    getWiki(id, callback) {    
+    getWiki(id, callback) {   
+        let result = {};
         return Wiki.findById(id)
         .then((wiki) => {
-            callback(null, wiki);
+            
+            if (!wiki) {
+              callback(404);
+                
+            } else { 
+              result["wiki"] = wiki;
+                
+              Collaborator.scope({ method: ["collaboratorsFor", id] }).all()
+                .then((collaborators) => {
+                  result["collaborators"] = collaborators;
+                  callback(null, result);
+                })
+            }
+            
         })
         .catch((err) => {
             callback(err);
@@ -35,44 +53,36 @@ module.exports = {
     },
     deleteWiki(id, callback) {
         
-        //cannot delete wikis - TROUBLESHOOT
-        //not passing in req so cannot find req.params.id??
-        
-        return Wiki.findById(req.params.id)
-      .then((wiki) => {
-        const authorized = new Authorizer(req.user, wiki).destroy();
-
-        if (authorized) {
-          wiki.destroy()
-          .then((deletedRecordsCount) => {
-            callback(null, deletedRecordsCount);
-          });
-        } else {
-          req.flash("notice", "You are not authorized to delete this wiki");
-          callback(401);
-        }
+      return Wiki.destroy({
+          where: { id }
       })
+      .then((wiki) => {
+        callback(null, wiki);
+      })  
       .catch(err => {
         callback(err);
       });
     }, 
-    updateWiki(req, updatedWiki, callback) {
-        return Wiki.findById(req.params.id)
+    updateWiki(id, updatedWiki, callback) {
+        return Wiki.findById(id)
         .then((wiki) => {
+            
           if (!wiki) {
-            return callback(404);
-          } else {
-            wiki.update(updatedWiki, {
-                fields: Object.keys(updatedWiki)
-                })
-                .then(() => {
-                callback(null, wiki);
-                })
-            }
+            return callback("Wiki not found");
+              
+          } 
+          wiki.update(updatedWiki, {
+              fields: Object.keys(updatedWiki)
+          })
+          .then(() => {
+              callback(null, wiki);
+          })
+          .catch((err) => {
+              callback(err)
+          })        
+            
         })
-        .catch(err => {
-            callback(err);
-        });
+      
     },
     makePrivate(id) {
         return Wiki.all()

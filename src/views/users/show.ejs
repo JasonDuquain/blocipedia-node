@@ -18,6 +18,7 @@
     <h1>Account Settings</h1>
     
     <p><%= currentUser.name %></p>
+    <p><%= currentUser.username %></p>
     
     <% if (currentUser && currentUser.role === "standard") { %>
      <p>Your current role is a standard user. In order to create private wikis please upgrade your account</p>
