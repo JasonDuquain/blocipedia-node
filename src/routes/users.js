@@ -19,6 +19,7 @@ router.post('/users/:id/upgrade', userController.upgrade);
 router.get('/users/upgrade-success', userController.upgraded);
 router.post('/users/:id/downgrade', userController.downgrade);
 
+router.get("/users/collaborations", userController.showCollaborations);
 
 
 

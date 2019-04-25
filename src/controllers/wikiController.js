@@ -40,7 +40,7 @@ module.exports = {
             });
             
         } else {
-            req.flash("notice", "You are not authorized to create this wiki.");
+            req.flash("notice", "You are not authorized to do that.");
             res.redirect("/wikis"); 
         }
     }, 
@@ -48,10 +48,10 @@ module.exports = {
     show(req, res, next) {
 
         wikiQueries.getWiki(req.params.id, (err, wiki) => {
+            
             if (err || wiki == null) {
                 res.redirect(404, "/")
             } else {
-                console.log( markdown.toHTML( "Hello *World*!" ) );
                 wiki.body = markdown.toHTML(wiki.body)
                 res.render("wikis/show", {wiki});
             }
@@ -60,7 +60,7 @@ module.exports = {
 
     destroy(req, res, next) {
 
-        wikiQueries.deleteWiki(req.params.id, (err, wiki) => {
+        wikiQueries.deleteWiki(req, (err, wiki) => {
             if (err) {
                 res.redirect(500, `/wikis/${req.params.id}`)
             } else {
@@ -70,17 +70,20 @@ module.exports = {
         })
     },
     
-    edit(req, res, next){
-        wikiQueries.getWiki(req.params.id, (err, wiki) =>{
-
+    edit(req, res, next) {
+        wikiQueries.getWiki(req.params.id, (err, result) => {
+            
+            // getting 404 when trying to edit wiki - TROUBLESHOOT
+            
             if (err || wiki == null) {
                 res.redirect(404, "/")
             } else {
                 let authorized = new Authorizer(req.user).edit();
+                
                 if (authorized) {
                     res.render("wikis/edit", {wiki})
                 } else {
-                    req.flash("notice","You are not authorized to edit this wiki.")
+                    req.flash("notice", "You are not authorized to do that.")
                     res.redirect(`/wikis/${req.params.id}`)
                 }
             }
@@ -92,8 +95,8 @@ module.exports = {
             if (err || wiki == null) {
                 res.redirect(404, `/wikis/${req.params.id}`);
             } else {
-                req.flash('notice', 'Wiki updated!')
-                res.redirect(`/wikis/${req.params.id}`);
+                req.flash("notice", "Wiki updated!")
+                res.redirect(`/wikis/${wiki.id}`);
             } 
         });
     },
@@ -101,9 +104,9 @@ module.exports = {
     private(req, res, next) {
         wikiQueries.getAllWikis((err, wikis) => {
           if (err){
-            res.redirect(500, 'static/index');
+            res.redirect(500, "static/index");
           } else {
-            res.render('wikis/private', {wikis});
+            res.render("wikis/private", {wikis});
           }
         })
     }

@@ -1,5 +1,8 @@
 const Wiki = require("./models").Wiki;
 const Authorizer = require("../policies/application");
+const User = require("./models").User;
+const Collaborator = require("./models").Collaborators;
+
 
 module.exports = {
 
@@ -21,16 +24,20 @@ module.exports = {
             callback(err);
         })
     }, 
-    getWiki(id, callback) {
+    getWiki(id, callback) {    
         return Wiki.findById(id)
         .then((wiki) => {
-            callback(null, wiki)
+            callback(null, wiki);
         })
         .catch((err) => {
             callback(err);
         })
     },
     deleteWiki(id, callback) {
+        
+        //cannot delete wikis - TROUBLESHOOT
+        //not passing in req so cannot find req.params.id??
+        
         return Wiki.findById(req.params.id)
       .then((wiki) => {
         const authorized = new Authorizer(req.user, wiki).destroy();
